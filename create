@@ -1,0 +1,241 @@
+#!/usr/bin/env python3
+"""Unified project creation script for PhD research projects.
+
+Usage:
+    ./create <name> --lang <python|r> [--dir <path>]
+"""
+
+import argparse
+import os
+import re
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+
+
+def load_config():
+    """Load config.yaml using PyYAML (installed on-the-fly via uv if needed)."""
+    config_path = SCRIPT_DIR / "config.yaml"
+    if not config_path.exists():
+        print(f"Error: config file not found at {config_path}", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        import yaml
+    except ImportError:
+        print("Error: PyYAML is required. Install it with: uv pip install pyyaml", file=sys.stderr)
+        sys.exit(1)
+
+    with open(config_path) as f:
+        return yaml.safe_load(f)
+
+
+def resolve_target_dir(args, config):
+    """Determine where the project should be created."""
+    if args.dir:
+        base = Path(args.dir).expanduser().resolve()
+    elif config.get("default_project_dir"):
+        base = Path(config["default_project_dir"]).expanduser().resolve()
+    else:
+        base = Path.cwd()
+    return base / args.name
+
+
+def create_python_project(target_dir, project_name, config):
+    """Create a Python project from the template."""
+    template_dir = SCRIPT_DIR / "python-project"
+    if not template_dir.exists():
+        print(f"Error: Python template not found at {template_dir}", file=sys.stderr)
+        sys.exit(1)
+
+    module_name = re.sub(r"-", "_", project_name).lower()
+
+    # Copy template, excluding init.sh and .DS_Store
+    shutil.copytree(
+        template_dir,
+        target_dir,
+        ignore=shutil.ignore_patterns("init.sh", ".DS_Store"),
+    )
+
+    # Rename the package directory
+    (target_dir / "project_name").rename(target_dir / module_name)
+
+    # Update pyproject.toml
+    pyproject = target_dir / "pyproject.toml"
+    text = pyproject.read_text()
+    text = text.replace('name = "project_name"', f'name = "{project_name}"')
+    text = text.replace('"project_name"', f'"{module_name}"')
+    pyproject.write_text(text)
+
+    # Update test files
+    for test_file in (target_dir / "tests").rglob("*.py"):
+        content = test_file.read_text()
+        if "project_name" in content:
+            test_file.write_text(content.replace("project_name", module_name))
+
+    # Update python version if configured
+    py_version = config.get("python", {}).get("python_version")
+    if py_version:
+        python_version_file = target_dir / ".python-version"
+        if python_version_file.exists():
+            python_version_file.write_text(f"{py_version}\n")
+
+    # Run uv sync
+    print("Running uv sync...")
+    subprocess.run(["uv", "sync"], cwd=target_dir, check=True)
+
+    print(f"\nPython project '{project_name}' created!")
+    print(f"  Module: {module_name}/")
+    print(f"  Activate: source {target_dir}/.venv/bin/activate")
+
+
+def create_r_project(target_dir, project_name, config):
+    """Create an R project from the template."""
+    template_dir = SCRIPT_DIR / "r-project"
+    if not template_dir.exists():
+        print(f"Error: R template not found at {template_dir}", file=sys.stderr)
+        sys.exit(1)
+
+    r_config = config.get("r", {})
+    use_renv = r_config.get("use_renv", True)
+
+    # Create directory structure
+    target_dir.mkdir(parents=True, exist_ok=True)
+    for subdir in [
+        "data/raw",
+        "data/processed",
+        "R",
+        "reports/figures",
+        "models",
+        "notebooks",
+    ]:
+        d = target_dir / subdir
+        d.mkdir(parents=True, exist_ok=True)
+        (d / ".gitkeep").touch()
+
+    # Create .Rproj file
+    rproj = target_dir / f"{project_name}.Rproj"
+    rproj.write_text(
+        """\
+Version: 1.0
+
+RestoreWorkspace: Default
+SaveWorkspace: Default
+AlwaysSaveHistory: Default
+
+EnableCodeIndexing: Yes
+UseSpacesForTab: Yes
+NumSpacesForTab: 2
+Encoding: UTF-8
+
+RnwWeave: Sweave
+LaTeX: pdfLaTeX
+"""
+    )
+
+    # Create README
+    readme = target_dir / "README.md"
+    readme.write_text(
+        f"""\
+# {project_name}
+
+## Getting Started
+
+### 1. Clone this repository
+```bash
+git clone <repository-url>
+cd {project_name}
+```
+
+### 2. Set up R environment
+- Open `{project_name}.Rproj` in RStudio
+- Run: `renv::restore()` (this installs all required packages)
+
+### 3. Initialize project data
+- Run: `source('R/load_data.R')`
+
+You're ready to go!
+"""
+    )
+
+    # Create starter load_data.R
+    load_data = target_dir / "R" / "load_data.R"
+    load_data.write_text("# Data loading script\n# Add your data loading code here\n")
+
+    # Copy .gitignore from template
+    gitignore_template = template_dir / ".gitignore_template"
+    if gitignore_template.exists():
+        shutil.copy2(gitignore_template, target_dir / ".gitignore")
+
+    # Initialize renv if configured
+    if use_renv:
+        print("Initializing renv...")
+        subprocess.run(
+            ["Rscript", "-e", "renv::init()"],
+            cwd=target_dir,
+            check=True,
+        )
+
+    print(f"\nR project '{project_name}' created!")
+    print(f"  Open: {target_dir / f'{project_name}.Rproj'}")
+
+
+def init_git(target_dir, project_name, config):
+    """Initialize git repo and optionally set remote."""
+    subprocess.run(["git", "init"], cwd=target_dir, check=True)
+
+    remote = config.get("default_remote", "")
+    if remote:
+        remote_url = f"{remote}/{project_name}.git"
+        subprocess.run(
+            ["git", "remote", "add", "origin", remote_url],
+            cwd=target_dir,
+            check=True,
+        )
+        print(f"  Remote: {remote_url}")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Create a new PhD research project from a template."
+    )
+    parser.add_argument("name", help="Project name (e.g. my-project)")
+    parser.add_argument(
+        "--lang",
+        required=True,
+        choices=["python", "r"],
+        help="Project language: python or r",
+    )
+    parser.add_argument(
+        "--dir",
+        help="Target parent directory (overrides default_project_dir from config)",
+    )
+    args = parser.parse_args()
+
+    config = load_config()
+    target_dir = resolve_target_dir(args, config)
+
+    if target_dir.exists():
+        print(f"Error: {target_dir} already exists", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Creating {args.lang} project '{args.name}' at {target_dir}")
+    print()
+
+    if args.lang == "python":
+        create_python_project(target_dir, args.name, config)
+    elif args.lang == "r":
+        create_r_project(target_dir, args.name, config)
+
+    # Initialize git
+    init_git(target_dir, args.name, config)
+
+    print()
+    print(f"Done! Project created at {target_dir}")
+
+
+if __name__ == "__main__":
+    main()

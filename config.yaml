@@ -1,0 +1,14 @@
+default_project_dir: ~/Documents/phd/projects
+default_remote: git@github.com:username
+
+author:
+  name: ""
+  email: ""
+
+python:
+  python_version: "3.11"
+
+r:
+  use_renv: true
+  use_targets: false
+  license: MIT
