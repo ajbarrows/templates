@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+
+# Tools
+.ruff_cache/
+.pytest_cache/
+
+# Environment
+.env
+
+# R
+.Rhistory
+.Rapp.history
+.RData
+.RDataTmp
+.Ruserdata
+.Rproj.user/
+*_cache/
+/cache/
+*.utf8.md
+*.knit.md
+.Renviron
+
+# renv (keep activate.R and renv.lock; ignore the library)
+renv/library/
+renv/python/
+renv/staging/
+
+# Data (track .gitkeep but not data files)
+data/**
+!data/**/
+!data/**/.gitkeep
+
+# Models
+models/**
+!models/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Quarto
+quarto/_site/
+quarto/.quarto/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
