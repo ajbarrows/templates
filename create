@@ -2,11 +2,10 @@
 """Unified project creation script for PhD research projects.
 
 Usage:
-    ./create <name> --lang <python|r> [--dir <path>]
+    ./create <name> --lang <python|r> [--dir <path>] [--no-quarto]
 """
 
 import argparse
-import os
 import re
 import shutil
 import subprocess
@@ -102,73 +101,19 @@ def create_r_project(target_dir, project_name, config):
     r_config = config.get("r", {})
     use_renv = r_config.get("use_renv", True)
 
-    # Create directory structure
-    target_dir.mkdir(parents=True, exist_ok=True)
-    for subdir in [
-        "data/raw",
-        "data/processed",
-        "R",
-        "reports/figures",
-        "models",
-        "notebooks",
-    ]:
-        d = target_dir / subdir
-        d.mkdir(parents=True, exist_ok=True)
-        (d / ".gitkeep").touch()
-
-    # Create .Rproj file
-    rproj = target_dir / f"{project_name}.Rproj"
-    rproj.write_text(
-        """\
-Version: 1.0
-
-RestoreWorkspace: Default
-SaveWorkspace: Default
-AlwaysSaveHistory: Default
-
-EnableCodeIndexing: Yes
-UseSpacesForTab: Yes
-NumSpacesForTab: 2
-Encoding: UTF-8
-
-RnwWeave: Sweave
-LaTeX: pdfLaTeX
-"""
+    # Copy template, excluding init.sh and .DS_Store
+    shutil.copytree(
+        template_dir,
+        target_dir,
+        ignore=shutil.ignore_patterns("init.sh", ".DS_Store"),
     )
 
-    # Create README
+    # Rename the placeholder .Rproj file
+    (target_dir / "project_name.Rproj").rename(target_dir / f"{project_name}.Rproj")
+
+    # Substitute project_name placeholder in README
     readme = target_dir / "README.md"
-    readme.write_text(
-        f"""\
-# {project_name}
-
-## Getting Started
-
-### 1. Clone this repository
-```bash
-git clone <repository-url>
-cd {project_name}
-```
-
-### 2. Set up R environment
-- Open `{project_name}.Rproj` in RStudio
-- Run: `renv::restore()` (this installs all required packages)
-
-### 3. Initialize project data
-- Run: `source('R/load_data.R')`
-
-You're ready to go!
-"""
-    )
-
-    # Create starter load_data.R
-    load_data = target_dir / "R" / "load_data.R"
-    load_data.write_text("# Data loading script\n# Add your data loading code here\n")
-
-    # Copy .gitignore from template
-    gitignore_template = template_dir / ".gitignore_template"
-    if gitignore_template.exists():
-        shutil.copy2(gitignore_template, target_dir / ".gitignore")
+    readme.write_text(readme.read_text().replace("project_name", project_name))
 
     # Initialize renv if configured
     if use_renv:
@@ -181,6 +126,110 @@ You're ready to go!
 
     print(f"\nR project '{project_name}' created!")
     print(f"  Open: {target_dir / f'{project_name}.Rproj'}")
+
+
+def create_python_r_project(target_dir, project_name, config):
+    """Create a Python+R project from the template."""
+    template_dir = SCRIPT_DIR / "python-r-project"
+    if not template_dir.exists():
+        print(f"Error: Python+R template not found at {template_dir}", file=sys.stderr)
+        sys.exit(1)
+
+    module_name = re.sub(r"-", "_", project_name).lower()
+    r_config = config.get("python_r", {})
+    use_renv = r_config.get("use_renv", True)
+
+    # Copy template, excluding init.sh and .DS_Store
+    shutil.copytree(
+        template_dir,
+        target_dir,
+        ignore=shutil.ignore_patterns("init.sh", ".DS_Store"),
+    )
+
+    # Rename the Python package
+    (target_dir / "project_name").rename(target_dir / module_name)
+
+    # Update pyproject.toml
+    pyproject = target_dir / "pyproject.toml"
+    text = pyproject.read_text()
+    text = text.replace('name = "project_name"', f'name = "{project_name}"')
+    text = text.replace('"project_name"', f'"{module_name}"')
+    pyproject.write_text(text)
+
+    # Update test files
+    for test_file in (target_dir / "tests").rglob("*.py"):
+        content = test_file.read_text()
+        if "project_name" in content:
+            test_file.write_text(content.replace("project_name", module_name))
+
+    # Update README
+    readme = target_dir / "README.md"
+    readme.write_text(readme.read_text().replace("project_name", project_name))
+
+    # Update python version if configured
+    py_version = config.get("python", {}).get("python_version")
+    if py_version:
+        python_version_file = target_dir / ".python-version"
+        if python_version_file.exists():
+            python_version_file.write_text(f"{py_version}\n")
+
+    # Run uv sync
+    print("Running uv sync...")
+    subprocess.run(["uv", "sync"], cwd=target_dir, check=True)
+
+    # Initialize renv if configured
+    if use_renv:
+        print("Initializing renv...")
+        subprocess.run(
+            ["Rscript", "-e", "renv::init()"],
+            cwd=target_dir,
+            check=True,
+        )
+
+    print(f"\nPython+R project '{project_name}' created!")
+    print(f"  Python module: {module_name}/")
+    print(f"  Activate Python: source {target_dir}/.venv/bin/activate")
+    print(f"  R packages: make r-restore")
+
+
+def create_quarto_site(target_dir, project_name, config):
+    """Create a Quarto website alongside the project."""
+    quarto_config = config.get("quarto", {})
+    if not quarto_config.get("use_quarto", True):
+        return
+
+    template_dir = SCRIPT_DIR / "quarto-site"
+    if not template_dir.exists():
+        print(f"Warning: Quarto template not found at {template_dir}", file=sys.stderr)
+        return
+
+    quarto_dir = target_dir / "quarto"
+    shutil.copytree(template_dir, quarto_dir)
+
+    # Symlink quarto/figures -> ../reports/figures so generated figures are
+    # accessible from all sections of the Quarto site without copying.
+    (quarto_dir / "figures").symlink_to(Path("../reports/figures"))
+
+    # Build substitution map from config
+    remote = config.get("default_remote", "").rstrip("/")
+    github_url = f"{remote}/{project_name}" if remote else "#"
+    author = config.get("author", {}).get("name", "")
+
+    substitutions = {
+        "project_name": project_name,
+        "project_github_url": github_url,
+        "author_name": author,
+    }
+
+    # Apply substitutions to all .qmd and .yml files
+    for path in quarto_dir.rglob("*"):
+        if path.is_file() and path.suffix in {".qmd", ".yml", ".yaml", ".css"}:
+            text = path.read_text()
+            for token, value in substitutions.items():
+                text = text.replace(token, value)
+            path.write_text(text)
+
+    print(f"  Quarto site: quarto/  (cd quarto && quarto preview)")
 
 
 def init_git(target_dir, project_name, config):
@@ -206,12 +255,17 @@ def main():
     parser.add_argument(
         "--lang",
         required=True,
-        choices=["python", "r"],
-        help="Project language: python or r",
+        choices=["python", "r", "python-r"],
+        help="Project language: python, r, or python-r (Python primary with R support)",
     )
     parser.add_argument(
         "--dir",
         help="Target parent directory (overrides default_project_dir from config)",
+    )
+    parser.add_argument(
+        "--no-quarto",
+        action="store_true",
+        help="Skip creating the Quarto website",
     )
     args = parser.parse_args()
 
@@ -229,6 +283,11 @@ def main():
         create_python_project(target_dir, args.name, config)
     elif args.lang == "r":
         create_r_project(target_dir, args.name, config)
+    elif args.lang == "python-r":
+        create_python_r_project(target_dir, args.name, config)
+
+    if not args.no_quarto:
+        create_quarto_site(target_dir, args.name, config)
 
     # Initialize git
     init_git(target_dir, args.name, config)

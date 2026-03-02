@@ -12,3 +12,9 @@ r:
   use_renv: true
   use_targets: false
   license: MIT
+
+python_r:
+  use_renv: true
+
+quarto:
+  use_quarto: true
