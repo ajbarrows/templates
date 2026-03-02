@@ -1,0 +1,17 @@
+Bootstrap: docker
+#From: rocker/r-ver:4.4
+From: rocker/rstudio
+
+%post
+    # Install system dependencies (geospatial libs for sf, etc.)
+    apt-get update && apt-get install -y \
+        curl \
+        git \
+        libgdal-dev \
+        libproj-dev \
+        libgeos-dev \
+        libudunits2-dev \
+        && rm -rf /var/lib/apt/lists/*
+
+    # Install R packages
+    #Rscript -e "install.packages(c('ggseg'), repos='https://cloud.r-project.org')"
