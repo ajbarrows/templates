@@ -1,0 +1,6 @@
+---
+title: "Progress"
+---
+
+Research updates, figures, and analyses. Add new `.qmd` files to this directory
+and they will appear automatically in the sidebar.

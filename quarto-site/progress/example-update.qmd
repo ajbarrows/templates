@@ -1,0 +1,38 @@
+---
+title: "Example Progress Update"
+date: "2024-01-15"
+description: "An example progress entry showing figures and analysis."
+---
+
+## Summary
+
+Brief summary of what was accomplished this period.
+
+## Figures
+
+Figures saved to `reports/figures/` are accessible via the `figures/` symlink
+at the Quarto project root. Reference them with paths relative to this file:
+
+```markdown
+![Caption](../figures/my-plot.png)
+```
+
+Or generate them inline using code chunks:
+
+```{{r}}
+#| label: fig-example
+#| fig-cap: "Example figure caption"
+# plot(x, y)
+```
+
+```{{python}}
+#| label: fig-example
+#| fig-cap: "Example figure caption"
+# import matplotlib.pyplot as plt
+# plt.plot(x, y)
+```
+
+## Next Steps
+
+- Item one
+- Item two

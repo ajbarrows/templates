@@ -1,0 +1,10 @@
+---
+title: "Conference Abstracts"
+listing:
+  contents: "*/index.qmd"
+  type: table
+  sort: "date desc"
+  fields: [title, date, description, categories]
+  categories: true
+  date-format: "YYYY-MM-DD"
+---

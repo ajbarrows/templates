@@ -1,0 +1,193 @@
+#!/usr/bin/env bash
+# new — scaffold a new paper, presentation, or abstract in the Quarto site.
+# Run from the quarto/ directory of your project.
+#
+# Usage:
+#   ./new paper <slug>
+#   ./new presentation <slug>
+#   ./new abstract <slug>
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TODAY=$(date +%Y-%m-%d)
+
+usage() {
+    cat >&2 <<'USAGE'
+Usage: ./new <type> <slug>
+
+  type   paper | presentation | abstract
+  slug   directory name for the new entry (use-hyphens)
+
+Examples:
+  ./new paper network-analysis
+  ./new presentation aps-march-2026
+  ./new abstract sfn-2026
+USAGE
+    exit 1
+}
+
+[[ $# -lt 2 ]] && usage
+
+TYPE="$1"
+SLUG="$2"
+
+# Read project title from _quarto.yml for use in presentation footers.
+PROJECT_TITLE=$(grep -m1 'title:' "$SCRIPT_DIR/_quarto.yml" | sed 's/.*title: *"\(.*\)"/\1/')
+
+case "$TYPE" in
+
+  paper)
+    DIR="$SCRIPT_DIR/papers/$SLUG"
+    [[ -d "$DIR" ]] && { echo "Error: papers/$SLUG already exists." >&2; exit 1; }
+    mkdir -p "$DIR"
+
+    cat > "$DIR/index.qmd" <<EOF
+---
+title: "Paper Title"
+date: ""
+description: "A study of X using Y, targeting Journal Z."
+author: ""
+format: html
+# Status: draft | submitted | under-review | revision | accepted | published
+categories: [draft]
+listing:
+  id: versions
+  contents:
+    - "*.qmd"
+    - "!index.qmd"
+  type: table
+  sort: "date desc"
+  fields: [title, date, description, categories]
+  date-format: "YYYY-MM-DD"
+---
+
+Brief narrative: what question this paper addresses, current status, target venue,
+and any relevant notes.
+
+## Versions
+
+::: {#versions}
+:::
+EOF
+
+    cat > "$DIR/v1-draft.qmd" <<EOF
+---
+title: "Working Title"
+date: "$TODAY"
+description: "Initial draft."
+categories: [draft]
+version: v1
+---
+
+## Abstract
+
+## Introduction
+
+## Methods
+
+## Results
+
+## Discussion
+
+## References
+
+::: {#refs}
+:::
+EOF
+
+    cat > "$DIR/_metadata.yaml" <<'EOF'
+# Output formats — adds an "Other Formats" download panel to the HTML output.
+# To disable for a specific version, override `format:` in that file's frontmatter.
+format:
+  html: default
+  docx:
+    reference-doc: ../reference.docx
+  typst: default
+
+# Uncomment when this paper has co-authors.
+# Solo papers inherit the global author from _quarto.yml automatically.
+# author:
+#   - name: Your Name
+#   - name: Collaborator Name
+#     orcid: "0000-0000-0000-0000"
+#     affiliations:
+#       - name: "Their Institution"
+EOF
+
+    echo "Created papers/$SLUG/"
+    echo "  index.qmd      — paper overview page"
+    echo "  v1-draft.qmd   — first draft"
+    echo "  _metadata.yaml — output formats and co-author instructions"
+    ;;
+
+  presentation)
+    DIR="$SCRIPT_DIR/presentations/$SLUG"
+    [[ -d "$DIR" ]] && { echo "Error: presentations/$SLUG already exists." >&2; exit 1; }
+    mkdir -p "$DIR"
+
+    cat > "$DIR/index.qmd" <<EOF
+---
+title: "Talk Title"
+date: "$TODAY"
+description: "A presentation on X."
+categories: []
+format:
+  revealjs:
+    theme: default
+    slide-number: true
+    footer: "$PROJECT_TITLE"
+---
+
+## Motivation
+
+What problem are we solving and why does it matter?
+
+## Methods
+
+Describe the approach.
+
+## Results
+
+Key findings go here.
+
+## Conclusions
+
+- Main takeaway one
+- Main takeaway two
+
+## Thank You
+
+Questions?
+EOF
+
+    echo "Created presentations/$SLUG/index.qmd"
+    ;;
+
+  abstract)
+    DIR="$SCRIPT_DIR/abstracts/$SLUG"
+    [[ -d "$DIR" ]] && { echo "Error: abstracts/$SLUG already exists." >&2; exit 1; }
+    mkdir -p "$DIR"
+
+    cat > "$DIR/index.qmd" <<EOF
+---
+title: "Abstract Title"
+date: "$TODAY"
+description: "Submitted to Conference Name."
+categories: [conference]
+---
+
+**Conference:** Conference Name
+**Venue:** City, Country
+
+## Abstract
+
+EOF
+
+    echo "Created abstracts/$SLUG/index.qmd"
+    ;;
+
+  *)
+    usage
+    ;;
+esac

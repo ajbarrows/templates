@@ -1,0 +1,11 @@
+---
+title: "Example Conference Abstract"
+date: "2024-01-15"
+description: "Submitted to Example Conference 2024."
+categories: [conference]
+---
+
+**Conference:** Example Conference 2024
+**Venue:** City, Country
+
+## Abstract

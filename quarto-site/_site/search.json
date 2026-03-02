@@ -1,0 +1,245 @@
+[
+  {
+    "objectID": "presentations/index.html",
+    "href": "presentations/index.html",
+    "title": "Presentations",
+    "section": "",
+    "text": "Conference talks and seminar slides. Each presentation lives in its own subdirectory and is rendered as a RevealJS slide deck within the site.\n\n\n\n\n\n\n\n\n\n\n\nExample Talk\n\n\n\nexample\n\n\n\nAn example RevealJS presentation.\n\n\n\n2024-01-15\n\n\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "abstracts/index.html",
+    "href": "abstracts/index.html",
+    "title": "Conference Abstracts",
+    "section": "",
+    "text": "Order By\n       Default\n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Title\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\nTitle\n\n\nDate\n\n\nDescription\n\n\nCategories\n\n\n\n\n\n\nExample Conference Abstract\n\n\n2024-01-15\n\n\nSubmitted to Example Conference 2024.\n\n\nconference\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "project_name",
+    "section": "",
+    "text": "Research website for project_name. Use the navigation above to explore progress updates, presentations, and publications."
+  },
+  {
+    "objectID": "index.html#about",
+    "href": "index.html#about",
+    "title": "project_name",
+    "section": "",
+    "text": "Research website for project_name. Use the navigation above to explore progress updates, presentations, and publications."
+  },
+  {
+    "objectID": "index.html#sections",
+    "href": "index.html#sections",
+    "title": "project_name",
+    "section": "Sections",
+    "text": "Sections\n\nProgress — Research updates, figures, and analyses\nPresentations — Conference talks and seminar slides\nPapers — Journal articles and preprints\nAbstracts — Conference abstracts and extended abstracts"
+  },
+  {
+    "objectID": "papers/example-paper/index.html",
+    "href": "papers/example-paper/index.html",
+    "title": "Example Paper",
+    "section": "",
+    "text": "Brief narrative: what question this paper addresses, current status, target venue, and any relevant notes."
+  },
+  {
+    "objectID": "papers/example-paper/index.html#versions",
+    "href": "papers/example-paper/index.html#versions",
+    "title": "Example Paper",
+    "section": "Versions",
+    "text": "Versions\n\n\n   \n     \n     \n       Order By\n       Default\n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Title\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\nTitle\n\n\nDate\n\n\nDescription\n\n\nCategories\n\n\n\n\n\n\nRevised Title: Evidence for X from Y\n\n\n2025-01-15\n\n\nSubmitted to Journal Z. Revised framing; added Section 4.\n\n\nv2, submitted\n\n\n\n\nWorking Title: A Preliminary Study of X\n\n\n2024-06-01\n\n\nInitial draft.\n\n\nv1, draft\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "papers/example-paper/v1-draft.html",
+    "href": "papers/example-paper/v1-draft.html",
+    "title": "Working Title: A Preliminary Study of X",
+    "section": "",
+    "text": "The abstract goes here. Summarise the motivation, methods, results, and conclusion in a concise paragraph."
+  },
+  {
+    "objectID": "papers/example-paper/v1-draft.html#abstract",
+    "href": "papers/example-paper/v1-draft.html#abstract",
+    "title": "Working Title: A Preliminary Study of X",
+    "section": "",
+    "text": "The abstract goes here. Summarise the motivation, methods, results, and conclusion in a concise paragraph."
+  },
+  {
+    "objectID": "papers/example-paper/v1-draft.html#introduction",
+    "href": "papers/example-paper/v1-draft.html#introduction",
+    "title": "Working Title: A Preliminary Study of X",
+    "section": "Introduction",
+    "text": "Introduction\nIntroduction content goes here."
+  },
+  {
+    "objectID": "papers/example-paper/v1-draft.html#methods",
+    "href": "papers/example-paper/v1-draft.html#methods",
+    "title": "Working Title: A Preliminary Study of X",
+    "section": "Methods",
+    "text": "Methods\nMethods content goes here."
+  },
+  {
+    "objectID": "papers/example-paper/v1-draft.html#results",
+    "href": "papers/example-paper/v1-draft.html#results",
+    "title": "Working Title: A Preliminary Study of X",
+    "section": "Results",
+    "text": "Results\nResults content goes here."
+  },
+  {
+    "objectID": "papers/example-paper/v1-draft.html#discussion",
+    "href": "papers/example-paper/v1-draft.html#discussion",
+    "title": "Working Title: A Preliminary Study of X",
+    "section": "Discussion",
+    "text": "Discussion\nDiscussion content goes here."
+  },
+  {
+    "objectID": "papers/example-paper/v1-draft.html#references",
+    "href": "papers/example-paper/v1-draft.html#references",
+    "title": "Working Title: A Preliminary Study of X",
+    "section": "References",
+    "text": "References"
+  },
+  {
+    "objectID": "progress/index.html",
+    "href": "progress/index.html",
+    "title": "Progress",
+    "section": "",
+    "text": "Research updates, figures, and analyses. Add new .qmd files to this directory and they will appear automatically in the sidebar.",
+    "crumbs": [
+      "Progress"
+    ]
+  },
+  {
+    "objectID": "progress/example-update.html",
+    "href": "progress/example-update.html",
+    "title": "Example Progress Update",
+    "section": "",
+    "text": "Brief summary of what was accomplished this period.",
+    "crumbs": [
+      "Progress",
+      "Example Progress Update"
+    ]
+  },
+  {
+    "objectID": "progress/example-update.html#summary",
+    "href": "progress/example-update.html#summary",
+    "title": "Example Progress Update",
+    "section": "",
+    "text": "Brief summary of what was accomplished this period.",
+    "crumbs": [
+      "Progress",
+      "Example Progress Update"
+    ]
+  },
+  {
+    "objectID": "progress/example-update.html#figures",
+    "href": "progress/example-update.html#figures",
+    "title": "Example Progress Update",
+    "section": "Figures",
+    "text": "Figures\nFigures saved to reports/figures/ are accessible via the figures/ symlink at the Quarto project root. Reference them with paths relative to this file:\n![Caption](../figures/my-plot.png)\nOr generate them inline using code chunks:\n```{r}\n#| label: fig-example\n#| fig-cap: \"Example figure caption\"\n# plot(x, y)\n```\n```{python}\n#| label: fig-example\n#| fig-cap: \"Example figure caption\"\n# import matplotlib.pyplot as plt\n# plt.plot(x, y)\n```",
+    "crumbs": [
+      "Progress",
+      "Example Progress Update"
+    ]
+  },
+  {
+    "objectID": "progress/example-update.html#next-steps",
+    "href": "progress/example-update.html#next-steps",
+    "title": "Example Progress Update",
+    "section": "Next Steps",
+    "text": "Next Steps\n\nItem one\nItem two",
+    "crumbs": [
+      "Progress",
+      "Example Progress Update"
+    ]
+  },
+  {
+    "objectID": "papers/example-paper/v2-submitted.html#introduction",
+    "href": "papers/example-paper/v2-submitted.html#introduction",
+    "title": "Revised Title: Evidence for X from Y",
+    "section": "Introduction",
+    "text": "Introduction"
+  },
+  {
+    "objectID": "papers/example-paper/v2-submitted.html#methods",
+    "href": "papers/example-paper/v2-submitted.html#methods",
+    "title": "Revised Title: Evidence for X from Y",
+    "section": "Methods",
+    "text": "Methods"
+  },
+  {
+    "objectID": "papers/example-paper/v2-submitted.html#results",
+    "href": "papers/example-paper/v2-submitted.html#results",
+    "title": "Revised Title: Evidence for X from Y",
+    "section": "Results",
+    "text": "Results"
+  },
+  {
+    "objectID": "papers/example-paper/v2-submitted.html#discussion",
+    "href": "papers/example-paper/v2-submitted.html#discussion",
+    "title": "Revised Title: Evidence for X from Y",
+    "section": "Discussion",
+    "text": "Discussion"
+  },
+  {
+    "objectID": "papers/example-paper/v2-submitted.html#references",
+    "href": "papers/example-paper/v2-submitted.html#references",
+    "title": "Revised Title: Evidence for X from Y",
+    "section": "References",
+    "text": "References"
+  },
+  {
+    "objectID": "papers/index.html",
+    "href": "papers/index.html",
+    "title": "Papers",
+    "section": "",
+    "text": "Journal articles and preprints.\n\n\n\n\n\n\n\n   \n     \n     \n       Order By\n       Default\n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Title\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n\nTitle\n\n\nDate\n\n\nDescription\n\n\nCategories\n\n\n\n\n\n\nExample Paper\n\n\n \n\n\nA study of X using Y methods, targeting Journal Z.\n\n\ndraft\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "abstracts/example-abstract/index.html",
+    "href": "abstracts/example-abstract/index.html",
+    "title": "Example Conference Abstract",
+    "section": "",
+    "text": "Conference: Example Conference 2024 Venue: City, Country"
+  },
+  {
+    "objectID": "abstracts/example-abstract/index.html#abstract",
+    "href": "abstracts/example-abstract/index.html#abstract",
+    "title": "Example Conference Abstract",
+    "section": "Abstract",
+    "text": "Abstract"
+  },
+  {
+    "objectID": "presentations/example-talk/index.html#motivation",
+    "href": "presentations/example-talk/index.html#motivation",
+    "title": "Example Talk",
+    "section": "Motivation",
+    "text": "Motivation\nWhat problem are we solving and why does it matter?"
+  },
+  {
+    "objectID": "presentations/example-talk/index.html#methods",
+    "href": "presentations/example-talk/index.html#methods",
+    "title": "Example Talk",
+    "section": "Methods",
+    "text": "Methods\nDescribe the approach."
+  },
+  {
+    "objectID": "presentations/example-talk/index.html#results",
+    "href": "presentations/example-talk/index.html#results",
+    "title": "Example Talk",
+    "section": "Results",
+    "text": "Results\nKey findings go here.\n```{r}\n#| echo: false\n# plot(results)\n```"
+  },
+  {
+    "objectID": "presentations/example-talk/index.html#conclusions",
+    "href": "presentations/example-talk/index.html#conclusions",
+    "title": "Example Talk",
+    "section": "Conclusions",
+    "text": "Conclusions\n\nMain takeaway one\nMain takeaway two"
+  },
+  {
+    "objectID": "presentations/example-talk/index.html#thank-you",
+    "href": "presentations/example-talk/index.html#thank-you",
+    "title": "Example Talk",
+    "section": "Thank You",
+    "text": "Thank You\nQuestions?\n\n\n\nproject_name"
+  }
+]

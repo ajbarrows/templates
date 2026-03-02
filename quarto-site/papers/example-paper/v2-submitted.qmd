@@ -1,0 +1,22 @@
+---
+title: "Revised Title: Evidence for X from Y"
+date: "2025-01-15"
+description: "Submitted to Journal Z. Revised framing; added Section 4."
+categories: [submitted]
+version: v2
+---
+
+## Abstract
+
+## Introduction
+
+## Methods
+
+## Results
+
+## Discussion
+
+## References
+
+::: {#refs}
+:::

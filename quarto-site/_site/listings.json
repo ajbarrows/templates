@@ -1,0 +1,27 @@
+[
+  {
+    "listing": "/presentations/index.html",
+    "items": [
+      "/presentations/example-talk/index.html"
+    ]
+  },
+  {
+    "listing": "/abstracts/index.html",
+    "items": [
+      "/abstracts/example-abstract/index.html"
+    ]
+  },
+  {
+    "listing": "/papers/example-paper/index.html",
+    "items": [
+      "/papers/example-paper/v2-submitted.html",
+      "/papers/example-paper/v1-draft.html"
+    ]
+  },
+  {
+    "listing": "/papers/index.html",
+    "items": [
+      "/papers/example-paper/index.html"
+    ]
+  }
+]

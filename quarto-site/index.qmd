@@ -1,0 +1,16 @@
+---
+title: "project_name"
+author: "author_name"
+---
+
+## About
+
+Research website for **project_name**. Use the navigation above to explore progress
+updates, presentations, and publications.
+
+## Sections
+
+- [**Progress**](progress/index.qmd) — Research updates, figures, and analyses
+- [**Presentations**](presentations/index.qmd) — Conference talks and seminar slides
+- [**Papers**](papers/index.qmd) — Journal articles and preprints
+- [**Abstracts**](abstracts/index.qmd) — Conference abstracts and extended abstracts

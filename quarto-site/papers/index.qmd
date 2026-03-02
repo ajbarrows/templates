@@ -1,0 +1,20 @@
+---
+title: "Papers"
+listing:
+  contents: "*/index.qmd"
+  type: table
+  sort: "date desc"
+  fields: [title, date, description, categories, versions]
+  categories: true
+  date-format: "YYYY-MM-DD"
+  filter-ui: [title, categories]
+  sort-ui: [date, title]
+---
+
+Journal articles and preprints.
+
+<!-- Each paper lives in its own subdirectory with an index.qmd acting as its
+     overview page. The overview's categories should reflect current status:
+     draft | submitted | under-review | revision | accepted | published.
+     Version files within a paper directory can be named anything (e.g.,
+     v1-draft.qmd, v2-submitted.qmd) and are listed inside the overview page. -->

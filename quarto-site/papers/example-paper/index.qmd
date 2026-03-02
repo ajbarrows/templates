@@ -1,0 +1,26 @@
+---
+title: "Example Paper"
+date: ""
+description: "A study of X using Y methods, targeting Journal Z."
+author: ""
+format: html
+# Status: draft | submitted | under-review | revision | accepted | published
+categories: [draft]
+listing:
+  id: versions
+  contents:
+    - "*.qmd"
+    - "!index.qmd"
+  type: table
+  sort: "date desc"
+  fields: [title, date, description, categories]
+  date-format: "YYYY-MM-DD"
+---
+
+Brief narrative: what question this paper addresses, current status, target venue,
+and any relevant notes.
+
+## Versions
+
+::: {#versions}
+:::

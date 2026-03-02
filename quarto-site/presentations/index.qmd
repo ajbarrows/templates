@@ -1,0 +1,13 @@
+---
+title: "Presentations"
+listing:
+  contents: "*/index.qmd"
+  type: grid
+  sort: "date desc"
+  fields: [title, date, description, categories]
+  categories: true
+  date-format: "YYYY-MM-DD"
+---
+
+Conference talks and seminar slides. Each presentation lives in its own subdirectory
+and is rendered as a RevealJS slide deck within the site.

@@ -1,0 +1,21 @@
+# Author list for this paper. Applies to all version files in this directory.
+# Solo papers can omit this file and inherit the default from _quarto.yml.
+# Copy collaborator profile blocks from _quarto.yml to add co-authors.
+author:
+  - name: author_name
+    # orcid: "0000-0000-0000-0000"
+    # affiliations:
+    #   - name: "Your Institution"
+  # - name: "Collaborator Name"
+  #   orcid: "0000-0000-0000-0000"
+  #   affiliations:
+  #     - name: "Their Institution"
+
+# Render each version as HTML, DOCX, and PDF (via Typst — no LaTeX needed).
+# This automatically adds an "Other Formats" download panel to the HTML output.
+# To disable for a specific version, override `format:` in that file's frontmatter.
+format:
+  html: default
+  docx:
+    reference-doc: ../reference.docx
+  typst: default

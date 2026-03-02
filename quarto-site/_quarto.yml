@@ -1,0 +1,50 @@
+project:
+  type: website
+  output-dir: _site
+  resources:
+    - figures/
+
+# Default author for all documents. Overrride `author:` in a document's own
+# frontmatter to add co-authors (copy from the collaborator profiles below).
+# `author_name` is substituted with the real name by the `create` script.
+author:
+  - name: Tony Barrows
+    orcid: "0000-0003-1941-4660"
+    affiliations:
+      - name: "University of Vermont Larner College of Medicine"
+        department: "Psychiatry"
+      - name: "Vermont Complex Systems Institute"
+
+
+website:
+  title: "project_name"
+  navbar:
+    title: false
+    left:
+      - href: index.qmd
+        text: Home
+      - href: progress/index.qmd
+        text: Progress
+      - href: presentations/index.qmd
+        text: Presentations
+      - href: papers/index.qmd
+        text: Papers
+      - href: abstracts/index.qmd
+        text: Abstracts
+    right:
+      - icon: github
+        href: project_github_url
+        aria-label: GitHub
+  sidebar:
+    - title: "Progress"
+      style: "docked"
+      contents:
+        - auto: "progress/"
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    link-external-newwindow: true
