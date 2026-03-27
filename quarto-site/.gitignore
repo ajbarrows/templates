@@ -1,1 +1,6 @@
 /.quarto/
+
+# Collab workflow: generated markdown files (DOCX files are kept as artifacts)
+papers/*/collab/_*.md
+
+**/*.quarto_ipynb

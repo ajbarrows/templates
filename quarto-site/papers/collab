@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+# Collaborator manuscript workflow: share DOCX, review tracked changes.
+#
+# Usage:
+#   collab export <slug> <version>   Render version .qmd to DOCX → collab/baseline.docx
+#   collab review <slug>             Diff collab/returned.docx against collab/baseline.docx
+#
+# Workflow:
+#   1. collab export my-paper v1-draft    # render to DOCX, save as baseline
+#   2. Share papers/my-paper/collab/baseline.docx with collaborators
+#   3. Save their returned file as papers/my-paper/collab/returned.docx
+#   4. collab review my-paper             # see what changed
+#   5. Manually apply desired changes to the .qmd source
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+QUARTO_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Use quarto's bundled pandoc, fall back to system pandoc
+run_pandoc() {
+    if command -v quarto >/dev/null 2>&1; then
+        quarto pandoc "$@"
+    elif command -v pandoc >/dev/null 2>&1; then
+        pandoc "$@"
+    else
+        echo "Error: pandoc not found. Install Quarto (https://quarto.org) or pandoc." >&2
+        exit 1
+    fi
+}
+
+usage() {
+    cat <<'EOF'
+Usage:
+  collab export <slug> <version>   Render .qmd to DOCX and save as collab/baseline.docx
+  collab review <slug>             Diff collab/returned.docx against collab/baseline.docx
+
+Arguments:
+  slug     Paper directory name under papers/ (e.g. my-paper)
+  version  Version file stem, without .qmd (e.g. v1-draft, v2-submitted)
+
+Workflow:
+  1. papers/collab export my-paper v1-draft
+  2. Share papers/my-paper/collab/baseline.docx with collaborators
+  3. Save their returned file as papers/my-paper/collab/returned.docx
+  4. papers/collab review my-paper
+  5. Apply desired changes to the .qmd source
+EOF
+    exit 1
+}
+
+cmd="${1:-}"
+slug="${2:-}"
+
+[[ -z "$cmd" ]] && usage
+
+paper_dir="$SCRIPT_DIR/$slug"
+collab_dir="$paper_dir/collab"
+
+case "$cmd" in
+  export)
+    version="${3:-}"
+    [[ -z "$slug" || -z "$version" ]] && usage
+
+    qmd="$paper_dir/$version.qmd"
+    [[ -f "$qmd" ]] || { echo "Error: $qmd not found"; exit 1; }
+
+    mkdir -p "$collab_dir"
+
+    echo "Rendering $version.qmd → DOCX..."
+    tmpdir=$(mktemp -d)
+    cd "$QUARTO_ROOT"
+    # Quarto appends the source path to --output-dir, so the result lands at
+    # $tmpdir/papers/$slug/$version.docx — predictable regardless of project output-dir
+    quarto render "papers/$slug/$version.qmd" --to docx --output-dir "$tmpdir"
+    mv "$tmpdir/papers/$slug/$version.docx" "$collab_dir/baseline.docx"
+    rm -rf "$tmpdir"
+
+    echo "Saved: $collab_dir/baseline.docx"
+    echo ""
+    echo "Send baseline.docx to your collaborator."
+    echo "When they return it, save as: $collab_dir/returned.docx"
+    echo "Then run: papers/collab review $slug"
+    ;;
+
+  review)
+    [[ -z "$slug" ]] && usage
+
+    baseline="$collab_dir/baseline.docx"
+    returned="$collab_dir/returned.docx"
+
+    [[ -f "$baseline" ]] || {
+        echo "Error: $baseline not found."
+        echo "Run: papers/collab export $slug <version>"
+        exit 1
+    }
+    [[ -f "$returned" ]] || {
+        echo "Error: $returned not found."
+        echo "Save the collaborator's returned file there, then re-run."
+        exit 1
+    }
+
+    echo "Converting documents to markdown..."
+    run_pandoc "$baseline"                     -t markdown -o "$collab_dir/_baseline.md"
+    run_pandoc --track-changes=accept "$returned" -t markdown -o "$collab_dir/_accepted.md"
+    run_pandoc --track-changes=all    "$returned" -t markdown -o "$collab_dir/_review.md"
+
+    echo ""
+    echo "=== Changes (all collaborator edits, accepted) ==="
+    if command -v git >/dev/null 2>&1; then
+        git diff --no-index --word-diff \
+            "$collab_dir/_baseline.md" "$collab_dir/_accepted.md" || true
+    else
+        diff --unified=3 \
+            "$collab_dir/_baseline.md" "$collab_dir/_accepted.md" || true
+    fi
+
+    echo ""
+    echo "Annotated review (insertions/deletions inline):"
+    echo "  $collab_dir/_review.md"
+    echo ""
+    echo "  [added text]{.insertion}   [removed text]{.deletion}"
+    ;;
+
+  *)
+    echo "Unknown command: $cmd"
+    echo ""
+    usage
+    ;;
+esac

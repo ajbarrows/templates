@@ -127,6 +127,30 @@ Collaborator profile blocks are kept as comments in `_quarto.yml` for copy-paste
 
 To preview: `cd quarto && quarto preview`
 
+### Collaborator DOCX workflow
+
+`papers/collab` is a script for the send-DOCX-get-tracked-changes review cycle:
+
+```bash
+# 1. Render a version to DOCX and save as the baseline
+papers/collab export my-paper v1-draft
+
+# 2. Send papers/my-paper/collab/baseline.docx to collaborators.
+#    When they return it with tracked changes, save as:
+#    papers/my-paper/collab/returned.docx
+
+# 3. Review changes (word-diff + annotated _review.md)
+papers/collab review my-paper
+```
+
+The `review` command produces:
+- A word-diff printed to the terminal (git word-diff or plain diff)
+- `collab/_review.md` — full annotated version with `[text]{.insertion}` / `[text]{.deletion}` markup
+
+Apply desired changes manually to the `.qmd` source; the `.qmd` is always the source of truth.
+The `collab/` directory under each paper holds `baseline.docx` and `returned.docx` as artifacts.
+Generated `_*.md` files are gitignored.
+
 ## Style
 
 - Python: ruff with `line-length = 99`, `target-version = "py311"`, lint rules `E, F, I, W`
