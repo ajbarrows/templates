@@ -127,6 +127,59 @@ Collaborator profile blocks are kept as comments in `_quarto.yml` for copy-paste
 
 To preview: `cd quarto && quarto preview`
 
+### Collaborator DOCX workflow
+
+`papers/collab` is a script for the send-DOCX-get-tracked-changes review cycle:
+
+```bash
+# 1. Render a version to DOCX and save as the baseline
+papers/collab export my-paper v1-draft
+
+# 2. Send papers/my-paper/collab/baseline.docx to collaborators.
+#    When they return it with tracked changes, save as:
+#    papers/my-paper/collab/returned.docx
+
+# 3. Review changes (word-diff + annotated _review.md)
+papers/collab review my-paper
+```
+
+The `review` command produces:
+- A word-diff printed to the terminal (git word-diff or plain diff)
+- `collab/_review.md` — full annotated version with `[text]{.insertion}` / `[text]{.deletion}` markup
+
+Apply desired changes manually to the `.qmd` source; the `.qmd` is always the source of truth.
+The `collab/` directory under each paper holds `baseline.docx` and `returned.docx` as artifacts.
+Generated `_*.md` files are gitignored.
+
+### Format conversion with Zotero live citations
+
+`papers/convert` converts between QMD, DOCX, and LaTeX formats:
+
+```bash
+# QMD → DOCX with Zotero live citation fields (Zotero must be open)
+papers/convert to-docx my-paper v1-draft
+
+# QMD → LaTeX with citeproc-rendered references (self-contained, e.g. arXiv)
+papers/convert to-latex my-paper v1-draft
+
+# QMD → LaTeX with raw \cite{} commands + .bib copy (for journal submission)
+papers/convert to-latex my-paper v1-draft --raw-bib
+
+# DOCX → QMD (citations become formatted text; manual cleanup needed)
+papers/convert from-docx my-paper collab/baseline.docx
+```
+
+Output lands in `papers/<slug>/converted/`.
+
+**BBT filter setup** (required for `to-docx`):
+1. Install Zotero + [Better BibTeX](https://retorque.re/zotero-better-bibtex/)
+2. Download the filter: `curl -L https://github.com/retorquere/zotero-better-bibtex/releases/latest/download/zotero.lua --create-dirs -o ~/.pandoc/filters/zotero.lua`
+3. Keep Zotero open when running `to-docx` — the filter calls Zotero's HTTP API to resolve citekeys into live fields
+
+Set `ZOTERO_BBT_FILTER=/path/to/zotero.lua` to override the auto-detected location.
+
+The `.qmd` is always the source of truth; `converted/` holds disposable output artifacts.
+
 ## Style
 
 - Python: ruff with `line-length = 99`, `target-version = "py311"`, lint rules `E, F, I, W`

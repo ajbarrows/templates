@@ -14,4 +14,4 @@ From: rocker/rstudio
         && rm -rf /var/lib/apt/lists/*
 
     # Install R packages
-    #Rscript -e "install.packages(c('ggseg'), repos='https://cloud.r-project.org')"
+    #Rscript -e "install.packages(c('ggseg', 'arrow'), repos='https://cloud.r-project.org')"

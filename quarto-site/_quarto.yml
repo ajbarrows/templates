@@ -1,8 +1,12 @@
 project:
   type: website
   output-dir: _site
+  render:
+    - "**/*.qmd"
+    - "!**/archive/**"
   resources:
     - figures/
+    - "**/*.pdf"
 
 # Default author for all documents. Overrride `author:` in a document's own
 # frontmatter to add co-authors (copy from the collaborator profiles below).
@@ -48,3 +52,4 @@ format:
     toc: true
     toc-depth: 3
     link-external-newwindow: true
+    html-math-method: katex
