@@ -1,14 +1,16 @@
 ---
 title: "Papers"
+# Status: draft | submitted | under-review | revision | accepted | published
+categories: [draft]
 listing:
-  contents: "*/index.qmd"
+  id: versions
+  contents:
+    - "*.qmd"
+    - "!index.qmd"
   type: table
-  sort: "date desc"
-  fields: [title, date, description, categories, versions]
-  categories: true
+  sort: "version desc"
+  fields: [title, date, categories, version]
   date-format: "YYYY-MM-DD"
-  filter-ui: [title, categories]
-  sort-ui: [date, title]
 ---
 
 Journal articles and preprints.

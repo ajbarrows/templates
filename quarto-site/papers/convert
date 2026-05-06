@@ -1,0 +1,317 @@
+#!/usr/bin/env bash
+# Document format converter: QMD ↔ DOCX ↔ LaTeX with Zotero live citations.
+#
+# Usage:
+#   convert to-<format> <slug> <input> [--raw-bib]
+#
+# Supported formats:  docx  latex  qmd
+#
+# <input> is a version stem (no extension → .qmd assumed) or a filename with
+# extension relative to papers/<slug>/ (or absolute).
+#
+# Examples:
+#   convert to-docx  my-paper v1-draft              # QMD → DOCX, Zotero live citations
+#   convert to-latex my-paper v1-draft              # QMD → LaTeX, citeproc inline refs
+#   convert to-latex my-paper v1-draft --raw-bib    # QMD → LaTeX, raw \cite{} + .bib
+#   convert to-qmd   my-paper collab/returned.docx  # DOCX → QMD
+#
+# Citation handling:
+#   to-docx:  Uses the BBT pandoc filter to embed Zotero live citation fields.
+#             --citeproc is intentionally omitted so the filter intercepts first.
+#             Zotero must be running (filter calls its HTTP API on port 23119).
+#   to-latex: With --citeproc (default), references are rendered inline — good
+#             for arXiv/preprints. With --raw-bib, \cite{key} commands are kept
+#             and the .bib file is copied alongside — for journal submission.
+#   to-qmd:   Straight conversion; Zotero fields become formatted text, not
+#             @citekey references. Manual cleanup of citations required.
+#
+# BBT filter setup (required for to-docx):
+#   1. Install Zotero + Better BibTeX: https://retorque.re/zotero-better-bibtex/
+#   2. Download the pandoc filter:
+#        curl -L https://github.com/retorquere/zotero-better-bibtex/releases/latest/download/zotero.lua \
+#             --create-dirs -o ~/.pandoc/filters/zotero.lua
+#   3. Keep Zotero open when running to-docx.
+#   Set ZOTERO_BBT_FILTER=/path/to/zotero.lua to override auto-detection.
+#
+# See: https://retorque.re/zotero-better-bibtex/exporting/pandoc/
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+QUARTO_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# ---------------------------------------------------------------------------
+# Pandoc runner: prefer Quarto's bundled pandoc so versions stay in sync
+# ---------------------------------------------------------------------------
+run_pandoc() {
+    if command -v quarto >/dev/null 2>&1; then
+        quarto pandoc "$@"
+    elif command -v pandoc >/dev/null 2>&1; then
+        pandoc "$@"
+    else
+        echo "Error: pandoc not found. Install Quarto (https://quarto.org) or pandoc." >&2
+        exit 1
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# Locate the BBT zotero.lua pandoc filter
+# ---------------------------------------------------------------------------
+find_bbt_filter() {
+    if [[ -n "${ZOTERO_BBT_FILTER:-}" ]]; then
+        [[ -f "$ZOTERO_BBT_FILTER" ]] || {
+            echo "Error: ZOTERO_BBT_FILTER set but not found: $ZOTERO_BBT_FILTER" >&2
+            exit 1
+        }
+        echo "$ZOTERO_BBT_FILTER"; return
+    fi
+
+    local candidates=(
+        "$HOME/.pandoc/filters/zotero.lua"
+        "$HOME/Zotero/better-bibtex/pandoc/zotero.lua"
+        "$HOME/.local/share/zotero/better-bibtex/pandoc/zotero.lua"
+        "$HOME/Library/Application Support/Zotero/better-bibtex/pandoc/zotero.lua"
+        "/usr/local/share/pandoc/filters/zotero.lua"
+        "/usr/share/pandoc/filters/zotero.lua"
+    )
+    for f in "${candidates[@]}"; do
+        [[ -f "$f" ]] && { echo "$f"; return; }
+    done
+
+    find "$HOME/Zotero" -name "zotero.lua" 2>/dev/null | head -1
+}
+
+# ---------------------------------------------------------------------------
+# Extract a single scalar field from YAML frontmatter.
+# Falls back to _metadata.yaml in the same directory (Quarto convention).
+# ---------------------------------------------------------------------------
+extract_frontmatter() {
+    local file="$1" field="$2" value
+
+    value=$(awk '/^---$/{f=!f; next} f' "$file" \
+        | grep "^${field}:" | head -1 \
+        | sed "s/^${field}: *//" | tr -d '"'"'")
+    [[ -n "$value" ]] && { echo "$value"; return; }
+
+    local meta="$(dirname "$file")/_metadata.yaml"
+    [[ -f "$meta" ]] && grep "^${field}:" "$meta" | head -1 \
+        | sed "s/^${field}: *//" | tr -d '"'"'"
+}
+
+# ---------------------------------------------------------------------------
+# Resolve a path from frontmatter relative to the source file or quarto root
+# ---------------------------------------------------------------------------
+resolve_path() {
+    local src="$1" field="$2"
+    local val; val=$(extract_frontmatter "$src" "$field")
+    [[ -z "$val" ]] && return
+
+    local dir; dir="$(dirname "$src")"
+    if   [[ -f "$dir/$val"         ]]; then echo "$dir/$val"
+    elif [[ -f "$QUARTO_ROOT/$val" ]]; then echo "$QUARTO_ROOT/$val"
+    elif [[ -f "$val"              ]]; then echo "$val"
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# Format maps
+# ---------------------------------------------------------------------------
+
+# File extension → pandoc --from value
+pandoc_from() {
+    case "$1" in
+        qmd|md)   echo "markdown+smart" ;;
+        docx)     echo "docx" ;;
+        tex)      echo "latex" ;;
+        *)        echo "markdown" ;;
+    esac
+}
+
+# Target name → pandoc --to value
+pandoc_to() {
+    case "$1" in
+        docx)           echo "docx" ;;
+        latex)          echo "latex" ;;
+        qmd|md|markdown) echo "markdown" ;;
+        *) echo "Error: unsupported target format: $1" >&2; exit 1 ;;
+    esac
+}
+
+# Target name → output file extension
+target_ext() {
+    case "$1" in
+        docx)           echo "docx" ;;
+        latex)          echo "tex" ;;
+        qmd|md|markdown) echo "qmd" ;;
+    esac
+}
+
+# ---------------------------------------------------------------------------
+usage() {
+    cat <<'EOF'
+Usage:
+  convert to-<format> <slug> <input> [--raw-bib]
+
+Supported formats:
+  docx    DOCX with Zotero live citation fields (requires Zotero + BBT)
+  latex   LaTeX; citeproc by default, raw \cite{} with --raw-bib
+  qmd     Markdown/QMD (citations become formatted text)
+
+Arguments:
+  slug    Paper directory name under papers/ (e.g. my-paper)
+  input   Version stem (e.g. v1-draft → v1-draft.qmd) or filename with
+          extension relative to papers/<slug>/ (e.g. collab/returned.docx)
+
+Flags:
+  --raw-bib   (to-latex) Keep \cite{key} commands; copy .bib alongside .tex
+
+Environment:
+  ZOTERO_BBT_FILTER   Path to the BBT zotero.lua pandoc filter
+
+Output lands in papers/<slug>/converted/.
+
+BBT filter: https://retorque.re/zotero-better-bibtex/exporting/pandoc/
+EOF
+    exit 1
+}
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+cmd="${1:-}"; slug="${2:-}"; input_arg="${3:-}"
+[[ -z "$cmd" || -z "$slug" || -z "$input_arg" ]] && usage
+
+# Derive target from command name (to-docx → docx, to-latex → latex, etc.)
+[[ "$cmd" == to-* ]] || { echo "Error: command must start with 'to-' (got: $cmd)"; usage; }
+target="${cmd#to-}"
+pandoc_to "$target" >/dev/null  # validates; exits on unknown format
+
+paper_dir="$SCRIPT_DIR/$slug"
+converted_dir="$paper_dir/converted"
+
+# Resolve input file: no extension → assume .qmd version stem
+if [[ "$input_arg" != *"."* ]]; then
+    src="$paper_dir/$input_arg.qmd"
+elif [[ "$input_arg" == /* ]]; then
+    src="$input_arg"
+else
+    src="$paper_dir/$input_arg"
+fi
+[[ -f "$src" ]] || { echo "Error: input file not found: $src"; exit 1; }
+
+src_ext="${src##*.}"
+src_stem="$(basename "$src" ".$src_ext")"
+out="$converted_dir/$src_stem.$(target_ext "$target")"
+
+mkdir -p "$converted_dir"
+
+# Parse flags
+raw_bib=false
+for arg in "${@:4}"; do
+    [[ "$arg" == "--raw-bib" ]] && raw_bib=true
+done
+
+# Build base pandoc args
+args=(
+    "$src"
+    --from "$(pandoc_from "$src_ext")"
+    --to   "$(pandoc_to  "$target")"
+    --output "$out"
+)
+
+# ---------------------------------------------------------------------------
+# Format-specific hooks
+# ---------------------------------------------------------------------------
+case "$target" in
+
+  docx)
+    bbt_filter=$(find_bbt_filter)
+    if [[ -z "$bbt_filter" ]]; then
+        cat >&2 <<'EOF'
+Error: Better BibTeX zotero.lua filter not found.
+
+  1. Install Zotero + Better BibTeX: https://retorque.re/zotero-better-bibtex/
+  2. Download the filter:
+       curl -L https://github.com/retorquere/zotero-better-bibtex/releases/latest/download/zotero.lua \
+            --create-dirs -o ~/.pandoc/filters/zotero.lua
+  3. Keep Zotero open when converting — the filter calls its HTTP API.
+
+  Or set: ZOTERO_BBT_FILTER=/path/to/zotero.lua
+
+  For a DOCX without live citations use: papers/collab export <slug> <version>
+EOF
+        exit 1
+    fi
+
+    if ! curl -sf "http://localhost:23119/better-bibtex/cayw?probe=true" >/dev/null 2>&1; then
+        echo "Warning: Zotero does not appear to be running (port 23119 unreachable)." >&2
+        echo "         The BBT filter requires Zotero to be open. Citations may fail." >&2
+        echo ""
+    fi
+
+    # Do NOT pass --citeproc: the BBT filter must intercept @citekeys first.
+    args+=(--lua-filter "$bbt_filter")
+    bib=$(resolve_path "$src" "bibliography"); [[ -n "$bib" ]] && args+=(--bibliography "$bib")
+    csl=$(resolve_path "$src" "csl");         [[ -n "$csl" ]] && args+=(--csl "$csl")
+    ref_docx="$SCRIPT_DIR/reference.docx"
+    [[ -f "$ref_docx" ]] && args+=(--reference-doc "$ref_docx")
+
+    echo "Converting $(basename "$src") → DOCX (Zotero live citations)..."
+    echo "  Filter: $bbt_filter"
+    [[ -n "${bib:-}" ]] && echo "  Bib:    $bib"
+    run_pandoc "${args[@]}"
+
+    echo ""
+    echo "Saved: $out"
+    echo "Open in Word with Zotero running — citations are live fields."
+    ;;
+
+  latex)
+    bib=$(resolve_path "$src" "bibliography")
+
+    if $raw_bib; then
+        # Keep \cite{key} commands — do not pass --bibliography or --citeproc.
+        echo "Converting $(basename "$src") → LaTeX (raw \\cite{} for journal submission)..."
+        run_pandoc "${args[@]}"
+
+        if [[ -n "$bib" ]]; then
+            bib_dest="$converted_dir/$(basename "$bib")"
+            cp "$bib" "$bib_dest"
+            echo "  Copied bib: $bib_dest"
+        else
+            echo "Warning: no bibliography in frontmatter — .bib not copied." >&2
+            echo "         Add  bibliography: refs.bib  to the QMD frontmatter." >&2
+        fi
+
+        echo ""
+        echo "Saved: $out"
+        echo "Compile with: pdflatex / bibtex / biblatex as your journal requires."
+    else
+        [[ -n "$bib" ]] && args+=(--bibliography "$bib" --citeproc)
+        csl=$(resolve_path "$src" "csl"); [[ -n "$csl" ]] && args+=(--csl "$csl")
+
+        echo "Converting $(basename "$src") → LaTeX (citeproc inline references)..."
+        [[ -n "${bib:-}" ]] && echo "  Bib: $bib"
+        run_pandoc "${args[@]}"
+
+        echo ""
+        echo "Saved: $out"
+        echo "References rendered inline. For raw \\cite{} + .bib, re-run with --raw-bib."
+    fi
+    ;;
+
+  qmd|md|markdown)
+    media_dir="$converted_dir/${src_stem}-media"
+    args+=(--wrap=none --extract-media="$media_dir")
+
+    echo "Converting $(basename "$src") → QMD..."
+    run_pandoc "${args[@]}"
+
+    echo ""
+    echo "Saved: $out"
+    [[ -d "$media_dir" ]] && echo "Media:  $media_dir/"
+    echo ""
+    echo "Note: Zotero citation fields become formatted text, not @citekey references."
+    ;;
+
+esac

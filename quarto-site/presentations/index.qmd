@@ -1,7 +1,9 @@
 ---
 title: "Presentations"
 listing:
-  contents: "*/index.qmd"
+  contents:
+    - "*/index.qmd"
+    - "!archive/**"
   type: grid
   sort: "date desc"
   fields: [title, date, description, categories]

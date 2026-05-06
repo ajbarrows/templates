@@ -151,6 +151,35 @@ Apply desired changes manually to the `.qmd` source; the `.qmd` is always the so
 The `collab/` directory under each paper holds `baseline.docx` and `returned.docx` as artifacts.
 Generated `_*.md` files are gitignored.
 
+### Format conversion with Zotero live citations
+
+`papers/convert` converts between QMD, DOCX, and LaTeX formats:
+
+```bash
+# QMD → DOCX with Zotero live citation fields (Zotero must be open)
+papers/convert to-docx my-paper v1-draft
+
+# QMD → LaTeX with citeproc-rendered references (self-contained, e.g. arXiv)
+papers/convert to-latex my-paper v1-draft
+
+# QMD → LaTeX with raw \cite{} commands + .bib copy (for journal submission)
+papers/convert to-latex my-paper v1-draft --raw-bib
+
+# DOCX → QMD (citations become formatted text; manual cleanup needed)
+papers/convert from-docx my-paper collab/baseline.docx
+```
+
+Output lands in `papers/<slug>/converted/`.
+
+**BBT filter setup** (required for `to-docx`):
+1. Install Zotero + [Better BibTeX](https://retorque.re/zotero-better-bibtex/)
+2. Download the filter: `curl -L https://github.com/retorquere/zotero-better-bibtex/releases/latest/download/zotero.lua --create-dirs -o ~/.pandoc/filters/zotero.lua`
+3. Keep Zotero open when running `to-docx` — the filter calls Zotero's HTTP API to resolve citekeys into live fields
+
+Set `ZOTERO_BBT_FILTER=/path/to/zotero.lua` to override the auto-detected location.
+
+The `.qmd` is always the source of truth; `converted/` holds disposable output artifacts.
+
 ## Style
 
 - Python: ruff with `line-length = 99`, `target-version = "py311"`, lint rules `E, F, I, W`
