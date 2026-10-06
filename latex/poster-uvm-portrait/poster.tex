@@ -1,0 +1,168 @@
+\documentclass[
+25pt,
+a0paper, 
+portrait,
+blockverticalspace=.1em,
+margin=.5in,
+innermargin=0mm
+]{tikzposter}
+
+\tikzposterlatexaffectionproofoff
+
+\usepackage{blindtext}
+\usepackage{comment}
+\usepackage{lipsum}
+\usepackage{wrapfig}
+\usepackage[]{natbib}
+\usepackage{bibentry}
+\usepackage{lipsum}
+
+\graphicspath{{figures}{figures/graphics}}
+\bibliographystyle{abbrvnat}
+
+\renewcommand{\bibsection}{}
+
+
+
+% Theme
+\include{includes/uvmcolors.tex}
+\include{includes/theme.tex}
+
+
+% Title
+\include{poster.title.tex}
+
+
+
+
+
+\begin{document}
+		\maketitle
+		
+		\block{Introduction}
+		{
+			
+		}
+		
+\block{Methods}
+	{
+
+		\begin{columns}
+			\column{0.3}
+				\begin{minipage}[c]{0.3\linewidth}
+					
+					\begin{itemize}
+						\item 
+
+						\item 
+
+						\item 
+
+					\end{itemize}
+					
+				\end{minipage}
+			\column{0.3}
+				\begin{minipage}[c]{0.3\linewidth}
+				
+				
+				\begin{tikzfigure}[Caption]
+					\includegraphics[width=.8\textwidth]{example-image-c}
+					\label{fig:methodsfigure1}
+				\end{tikzfigure}
+				
+				\end{minipage}
+			\column{0.3}
+				\begin{minipage}[c]{0.3\linewidth}
+
+				\begin{itemize}
+					\item 
+		
+					\item 
+				
+					\item 
+		
+				\end{itemize}
+
+			\end{minipage}
+	\end{columns}
+
+	}
+
+\block{Results}
+	{
+	
+	\begin{columns}
+		\column{0.3}
+		\begin{minipage}[t]{0.3\linewidth}
+
+			\begin{itemize}
+				\item 
+				\item 
+				\item 
+			\end{itemize}
+			
+			\vspace{1em}
+			
+			
+			\subsection*{Results Section 1}
+			
+			\paragraph{First} 
+			
+			
+			\paragraph{Second} 
+			
+			
+		\end{minipage}
+		\column{0.7}
+		\begin{minipage}[t]{0.7\linewidth}
+			\begin{tikzfigure}[Caption]
+				\includegraphics[width=.6\linewidth]{example-image-b}
+			\end{tikzfigure}
+		\end{minipage}
+		
+	\end{columns}
+%	\subsection*{Feedback}
+	\begin{columns}
+		\column{0.5}
+		\begin{minipage}[t]{0.5\linewidth}
+%			\paragraph{Reward pos. versus neg.} Decreased motor cortex and bilateral occiptal activations were observed, with slightly increased parietal activity by age, as well as decreased bilateral putamen and left hippocampus activations. Additional occipital and parietal activation decreases were seen in males, except increased left superior parietal activation in older males. 
+		\end{minipage}
+		\column{0.5}
+		\begin{minipage}[t]{0.5\linewidth}
+%			\paragraph{Loss pos. versus neg.}  Finally, widespread decreased cortical and subcortical effects were observed, particularly in the frontal and temporal cortical regions, and bilateral cerebellum, putamen, thalamus, and caudate subcortical regions. For older males, some anterior prefrontal and left putamen increases were observed.
+		\end{minipage}
+	\end{columns}
+	
+}
+
+\begin{columns}
+	\column{0.5}
+	\note[targetoffsetx=-28cm,
+	targetoffsety=-28cm,
+	width=0.5\linewidth
+	]	
+	{\textbf{\LARGE  Conclusions} \\ \\ \Large ...
+	}
+	
+	\column{0.5}
+	\block{Acknowledgements}
+	{
+		\lipsum[6]
+		
+	}
+	
+	\block{}
+	{	
+		The University of Vermont \\
+		Burlington, VT \\
+		e-mail \texttt{Anthony.Barrows@uvm.edu}
+	}
+	
+	
+	
+\end{columns}
+
+
+\nobibliography{bibliography}
+
+\end{document}

@@ -1,0 +1,20 @@
+default_project_dir: ~/Documents/projects
+default_remote: git@github.com:ajbarrows
+
+author:
+  name: "Anthony Barrows"
+  email: "anthony.barrows@uvm.edu"
+
+python:
+  python_version: "3.11"
+
+r:
+  use_renv: true
+  use_targets: false
+  license: MIT
+
+python_r:
+  use_renv: true
+
+quarto:
+  use_quarto: true

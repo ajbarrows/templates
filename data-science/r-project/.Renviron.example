@@ -1,0 +1,25 @@
+# .Renviron.example — copy to .Renviron and fill in values.
+# NEVER commit .Renviron.
+
+# Data repository
+# DATA_REPO_TOKEN=
+
+# External APIs
+# XNAT_HOST=https://xnat.yourorg.edu
+# XNAT_USER=
+# XNAT_PASSWORD=
+# REDCAP_API_TOKEN=
+
+# Cloud / object storage
+# AWS_PROFILE=
+# DATA_BUCKET=
+
+# Database
+# DATABASE_URL=postgresql://user:password@host:5432/dbname
+
+# Compute / HPC
+# SLURM_ACCOUNT=
+# HPC_HOST=
+
+# Project
+# LOG_LEVEL=INFO

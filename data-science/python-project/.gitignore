@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+
+# Tools
+.ruff_cache/
+.pytest_cache/
+
+# Environment
+.env
+
+# Data (track .gitkeep and SOURCES.md but not data files)
+data/**
+!data/**/
+!data/**/.gitkeep
+!data/SOURCES.md
+
+# Models
+models/**
+!models/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
+# Notebook outputs are stripped on commit by nbstripout (see .pre-commit-config.yaml).
+# To gitignore notebooks entirely instead, uncomment:
+# notebooks/*.ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Quarto
+quarto/_site/
+quarto/.quarto/

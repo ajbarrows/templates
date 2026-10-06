@@ -1,0 +1,45 @@
+# Data directories (raw inputs, derived outputs — not source)
+data/
+
+# Tabular
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.arrow
+
+# Scientific / array data
+*.h5
+*.hdf5
+*.nc
+*.nc4
+*.npy
+*.npz
+*.mat
+
+# R serialized data
+*.rda
+*.rds
+*.RData
+
+# Serialized Python objects / models
+*.pkl
+*.pickle
+
+# Spreadsheets
+*.xlsx
+*.xls
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Compressed data
+*.zip
+*.gz
+*.tar
+*.tar.gz
+
+# R Markdown / Quarto notebook outputs
+notebooks/*.nb.html

@@ -2,3 +2,22 @@
 __pycache__/
 *.pyc
 .venv/
+
+# Claude Code per-machine settings
+**/.claude/settings.local.json
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.bbl
+*.blg
+*.out
+*.toc
+*.nav
+*.snm
+*.vrb
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+latex/*/poster.pdf
+latex/*/pres.pdf

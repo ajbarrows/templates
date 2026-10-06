@@ -1,0 +1,135 @@
+\documentclass{beamer}
+\usetheme[sectionpage=progressbar]{metropolis}
+
+\beamertemplatenavigationsymbolsempty
+%\setbeameroption{show only notes}
+%\setbeameroption{show notes on second screen}
+
+\usepackage{graphicx}
+\graphicspath{{figures}{figures/graphics}}
+
+
+\usepackage[export]{adjustbox}
+
+\usepackage{caption}
+\captionsetup[figure]{labelformat=empty, font=scriptsize, labelfont=scriptsize}
+
+\usepackage{booktabs}
+\usepackage{colortbl}
+\definecolor{highlight}{RGB}{255,204,204}
+
+
+\usepackage{subcaption}
+\usepackage{multicol}
+
+\usepackage[authoryear]{natbib}
+\bibliographystyle{abbrvnat}
+
+% beamer style
+
+
+% just have frame number in footline
+\setbeamertemplate{footline}[frame number]
+
+% numberless footnote
+\newcommand\blfootnote[1]{{\tiny }%
+	\begingroup
+	\renewcommand\thefootnote{}\footnote{#1}%
+	\addtocounter{footnote}{-1}%
+	\endgroup
+}
+
+% for inserting tiny papers
+\newcommand{\smallpaperwidth}{0.175}
+
+% co-authors' images
+\newcommand{\coauthorimg}[3]{%
+	\begin{minipage}{0.16\textwidth}
+		\begin{figure}
+			\begin{minipage}{\linewidth}
+				\includegraphics[width=\linewidth]{#1}
+				\caption{#2 \\ #3}
+				%			\caption{#3}
+			\end{minipage}
+		\end{figure}
+	\end{minipage}
+}
+
+
+
+\title{Title}
+\subtitle[]{Venue}
+
+\date{}
+
+\author[Tony Barrows]{Tony Barrows}
+
+\institute[UVM]{ 
+	\includegraphics[width=4cm]{larner}
+%	\includegraphics[width=2cm]{complexbrain}
+	
+	}
+
+%\institute{\inst{1} University of Vermont \and \inst{2} University of Michigan}
+
+\begin{document}
+	
+	\begin{frame}
+		\maketitle
+		
+		\centering
+%		\includegraphics[width=2cm]{complexbrain}
+%		\includegraphics[width=3cm]{nerve}
+%		\includegraphics[width=2cm]{complexbrain}
+%		\includegraphics[width=2cm]{../../../pres-images/complexsystems}
+%		\includegraphics[width=3cm]{../../../pres-images/vacc_green}
+	\end{frame}
+	
+	%% Outline
+%\begin{frame}{Outline}
+%	\tableofcontents
+%\end{frame}
+
+%\begin{frame}{Paper}
+%		\begin{columns}
+%		\column{0.2\textwidth}
+%		\includegraphics[width=\columnwidth]{papers/Marek22}
+%		\column{0.8\textwidth}
+%		\href{https://www.nature.com/articles/s41586-022-04492-9}{Reproducible brain-wide association studies require thousands of individuals \cite{MarekEtAl2022}}
+%		
+%		Reasons:
+%		\begin{itemize}
+%			\item
+%		\end{itemize}
+%	\end{columns}
+%\end{frame}
+
+
+%\begin{frame}{Thank You}
+%	\centering
+%	\begin{tabular}{ccccc}
+%		\coauthorimg{people/eli}{Eli Klemperer, PhD}{University of Vermont} &
+%		\coauthorimg{people/hugh}{Hugh Garavan, PhD}{University of Vermont} &
+%		\coauthorimg{people/nick}{Nick Allgaier, PhD}{University of Vermont} &
+%		\coauthorimg{people/nicola}{Nicola Lindson, PhD}{University of Oxford} &
+%		\coauthorimg{people/gemma}{Gemma Taylor, PhD}{University of Bristol} 
+%	\end{tabular}
+%	
+%	\centering
+%	\includegraphics[width=1in]{complexbrain}
+%	\includegraphics[width=2in]{vcbh}
+%	
+%\end{frame}
+%
+
+\begin{frame}[allowframebreaks]{References}
+		\tiny
+		\bibliography{pres}
+
+\end{frame}
+
+
+	
+	
+\end{document}
+
