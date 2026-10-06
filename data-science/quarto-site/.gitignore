@@ -4,3 +4,6 @@
 papers/*/collab/_*.md
 
 **/*.quarto_ipynb
+
+# Rendered site output
+/_site/
