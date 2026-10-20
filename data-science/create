@@ -239,12 +239,22 @@ def create_quarto_site(target_dir, project_name, config):
     remote = config.get("default_remote", "").rstrip("/")
     github_url = f"{remote}/{project_name}" if remote else "#"
     author = config.get("author", {}).get("name", "")
+    deploy = config.get("deploy") or {}
+    base_url = (deploy.get("base_url") or "").rstrip("/")
+    base_path = (deploy.get("base_path") or "").rstrip("/")
+    site_url = f"{base_url}/{project_name}/" if base_url else ""
 
     substitutions = {
         "project_name": project_name,
         "project_github_url": github_url,
         "author_name": author,
+        "site_url": site_url,
     }
+
+    # Drop the site-url line when no deploy URL is configured.
+    if not site_url:
+        quarto_yml = quarto_dir / "_quarto.yml"
+        quarto_yml.write_text(re.sub(r"(?m)^ *site-url: site_url\n", "", quarto_yml.read_text()))
 
     # Apply substitutions to all .qmd and .yml files
     for path in quarto_dir.rglob("*"):
@@ -254,7 +264,18 @@ def create_quarto_site(target_dir, project_name, config):
                 text = text.replace(token, value)
             path.write_text(text)
 
+    # Per-project deploy settings, read by quarto/deploy
+    (quarto_dir / "_deploy.conf").write_text(
+        "# Read by ./deploy. Edit to change where this site is published.\n"
+        f"PROJECT={project_name}\n"
+        f"SSH_HOST={deploy.get('ssh_host') or ''}\n"
+        f"REMOTE_DIR={base_path + '/' + project_name if base_path else ''}\n"
+        f"SITE_URL={site_url}\n"
+    )
+
     print(f"  Quarto site: quarto/  (cd quarto && quarto preview)")
+    if not (deploy.get("ssh_host") and base_path):
+        print("  Note: deploy settings missing from config.yaml; fill in quarto/_deploy.conf")
 
 
 def setup_precommit(target_dir, lang):

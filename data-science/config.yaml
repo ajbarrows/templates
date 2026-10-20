@@ -18,3 +18,10 @@ python_r:
 
 quarto:
   use_quarto: true
+
+# Quarto site deployment (rsync over SSH). Each project deploys to
+# <base_path>/<name>/, served at <base_url>/<name>/.
+deploy:
+  ssh_host: "w3"   # alias from ~/.ssh/config
+  base_path: "/users/a/j/ajbarrow/www-root/assets/uvm_internal"  # e.g. /var/www/html/projects
+  base_url: "https://ajbarrow.w3.uvm.edu/assets/uvm_internal/"   # e.g. https://example.edu/projects

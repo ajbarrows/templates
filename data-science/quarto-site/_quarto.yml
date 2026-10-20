@@ -4,6 +4,8 @@ project:
   render:
     - "**/*.qmd"
     - "!**/archive/**"
+    - "!**/collab/**"
+    - "!**/converted/**"
   resources:
     - figures/
     - "**/*.pdf"
@@ -22,6 +24,7 @@ author:
 
 website:
   title: "project_name"
+  site-url: site_url
   navbar:
     title: false
     left:

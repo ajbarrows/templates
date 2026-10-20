@@ -42,3 +42,7 @@ make clean      # remove caches
 ## Configuration
 
 Python paths: `project_name/config.py`. R paths: `R/config.R` (identical structure, both project-relative). Keep them in sync. Credentials go in `.env` (gitignored; loaded by `config.py`).
+
+## Publishing
+
+`quarto/deploy` publishes the site to a web server. Never run it (or `make deploy`) unless explicitly asked.
