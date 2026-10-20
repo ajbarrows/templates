@@ -111,10 +111,7 @@ Workflow: Python processes data → saves to `data/processed/` → R reads for s
 
 - `_quarto.yml` — site config, navbar, format defaults; holds the project-wide `author:` default (top-level key, applied to all documents) and commented collaborator profile blocks for copy-paste
 - `styles.css` — minimal custom CSS
-- `progress/example-update.qmd` — example progress entry
-- `presentations/example-talk/index.qmd` — example RevealJS deck
-- `papers/example-paper/index.qmd` — paper overview (current status, embedded version listing)
-- `papers/example-paper/v1-draft.qmd`, `v2-submitted.qmd` — example version files
+- `new` — scaffolds content: `./new paper|presentation|abstract|progress <slug>`. The template ships with no example content; `new` is the single source of starter files.
 
 ### Author metadata
 

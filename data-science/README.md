@@ -124,6 +124,7 @@ cd quarto
 ./new paper <slug>          # new paper directory
 ./new presentation <slug>   # new RevealJS talk
 ./new abstract <slug>       # new conference abstract
+./new progress <slug>       # new dated progress update
 ```
 
 - **`paper`**
@@ -143,7 +144,7 @@ Papers render to multiple output formats automatically, adding an "Other Formats
 
 **Todo:** author affiliations aren't going great
 
-To customise DOCX output, add a `reference.docx` to `quarto/papers/` (see `quarto/papers/example-paper/_metadata.yaml`). To disable exports for a specific version, override `format:` in that version file's frontmatter.
+To customise DOCX output, add a `reference.docx` to `quarto/papers/` (see the `_metadata.yaml` that `./new paper` creates). To disable exports for a specific version, override `format:` in that version file's frontmatter.
 
 
 

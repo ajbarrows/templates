@@ -43,3 +43,7 @@ data/
 
 # Jupyter notebooks (outputs may contain sensitive data)
 notebooks/*.ipynb
+
+# Credentials
+.env
+.Renviron

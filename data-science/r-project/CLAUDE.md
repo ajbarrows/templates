@@ -36,4 +36,4 @@ source("R/load_data.R")
 
 ## Configuration
 
-All paths are defined in `R/config.R` using `here::here()`. Use these constants — never hardcode paths. Credentials go in `.Renviron` (see `.Renviron.example`).
+All paths are defined in `R/config.R` using `here::here()`. Use these constants — never hardcode paths. Credentials go in `.Renviron` (gitignored).

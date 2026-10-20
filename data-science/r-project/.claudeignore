@@ -43,3 +43,7 @@ data/
 
 # R Markdown / Quarto notebook outputs
 notebooks/*.nb.html
+
+# Credentials
+.env
+.Renviron

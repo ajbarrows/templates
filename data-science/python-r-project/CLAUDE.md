@@ -41,4 +41,4 @@ make clean      # remove caches
 
 ## Configuration
 
-Python paths: `project_name/config.py`. R paths: `R/config.R` (identical structure, both project-relative). Keep them in sync. Credentials go in `.env` (see `.env.example`).
+Python paths: `project_name/config.py`. R paths: `R/config.R` (identical structure, both project-relative). Keep them in sync. Credentials go in `.env` (gitignored; loaded by `config.py`).
