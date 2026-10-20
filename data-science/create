@@ -2,10 +2,11 @@
 """Unified project creation script for PhD research projects.
 
 Usage:
-    ./create <name> --lang <python|r> [--dir <path>] [--no-quarto]
+    ./create <name> --lang <python|r|python-r> [--dir <path>] [--no-quarto]
 """
 
 import argparse
+import os
 import re
 import shutil
 import subprocess
@@ -25,7 +26,16 @@ def load_config():
     try:
         import yaml
     except ImportError:
-        print("Error: PyYAML is required. Install it with: uv pip install pyyaml", file=sys.stderr)
+        # Re-run this script under uv with PyYAML available; the env guard prevents looping.
+        if shutil.which("uv") and not os.environ.get("CREATE_UV_REEXEC"):
+            os.environ["CREATE_UV_REEXEC"] = "1"
+            uv_cmd = ["uv", "run", "--no-project", "--with", "pyyaml", "python3"]
+            os.execvp("uv", [*uv_cmd, str(Path(__file__).resolve()), *sys.argv[1:]])
+        print(
+            "Error: PyYAML is required. Install uv (https://docs.astral.sh/uv/) "
+            "or run: python3 -m pip install pyyaml",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     with open(config_path) as f:
@@ -340,8 +350,7 @@ def main():
     print()
     print("Next steps:")
     print("  1. Fill in data/SOURCES.md with your data classification")
-    print("  2. Copy .env.example → .env (or .Renviron.example → .Renviron) and add credentials")
-    print("  3. If pre-commit setup failed: pip install pre-commit && pre-commit install")
+    print("  2. If pre-commit setup failed: pip install pre-commit && pre-commit install")
 
 
 if __name__ == "__main__":

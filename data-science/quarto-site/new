@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# new — scaffold a new paper, presentation, or abstract in the Quarto site.
+# new — scaffold a new paper, presentation, abstract, or progress update in the Quarto site.
 # Run from the quarto/ directory of your project.
 #
 # Usage:
 #   ./new paper <slug>
 #   ./new presentation <slug>
 #   ./new abstract <slug>
+#   ./new progress <slug>
 
 set -euo pipefail
 
@@ -16,13 +17,14 @@ usage() {
     cat >&2 <<'USAGE'
 Usage: ./new <type> <slug>
 
-  type   paper | presentation | abstract
+  type   paper | presentation | abstract | progress
   slug   directory name for the new entry (use-hyphens)
 
 Examples:
   ./new paper network-analysis
   ./new presentation aps-march-2026
   ./new abstract sfn-2026
+  ./new progress baseline-models
 USAGE
     exit 1
 }
@@ -162,6 +164,27 @@ Questions?
 EOF
 
     echo "Created presentations/$SLUG/index.qmd"
+    ;;
+
+  progress)
+    FILE="$SCRIPT_DIR/progress/$TODAY-$SLUG.qmd"
+    [[ -e "$FILE" ]] && { echo "Error: progress/$TODAY-$SLUG.qmd already exists." >&2; exit 1; }
+
+    cat > "$FILE" <<EOF
+---
+title: "Progress Update"
+date: "$TODAY"
+description: ""
+---
+
+<!-- Figures in reports/figures/ are available as ../figures/<name>.png -->
+
+## Summary
+
+## Next Steps
+EOF
+
+    echo "Created progress/$TODAY-$SLUG.qmd"
     ;;
 
   abstract)

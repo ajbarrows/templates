@@ -1,22 +1,11 @@
 ---
 title: "Papers"
-# Status: draft | submitted | under-review | revision | accepted | published
-categories: [draft]
 listing:
-  id: versions
-  contents:
-    - "*.qmd"
-    - "!index.qmd"
+  contents: "*/index.qmd"
   type: table
-  sort: "version desc"
-  fields: [title, date, categories, version]
+  sort: "date desc"
+  fields: [title, date, description, categories]
   date-format: "YYYY-MM-DD"
 ---
 
-Journal articles and preprints.
-
-<!-- Each paper lives in its own subdirectory with an index.qmd acting as its
-     overview page. The overview's categories should reflect current status:
-     draft | submitted | under-review | revision | accepted | published.
-     Version files within a paper directory can be named anything (e.g.,
-     v1-draft.qmd, v2-submitted.qmd) and are listed inside the overview page. -->
+Journal articles and preprints. Create one with `./new paper <slug>`.

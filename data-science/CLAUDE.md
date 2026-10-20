@@ -25,7 +25,7 @@ The preferred way to create new projects:
 ./create my-project --lang python --no-quarto  # skip Quarto site
 ```
 
-Requires PyYAML (`pip install pyyaml` or available via `uv`).
+Requires PyYAML. If it isn't importable, `create` re-runs itself via `uv run --no-project --with pyyaml` (guarded by the `CREATE_UV_REEXEC` env var); it exits with an error only if `uv` is missing too.
 
 ### `config.yaml` — shared configuration
 
@@ -111,10 +111,7 @@ Workflow: Python processes data → saves to `data/processed/` → R reads for s
 
 - `_quarto.yml` — site config, navbar, format defaults; holds the project-wide `author:` default (top-level key, applied to all documents) and commented collaborator profile blocks for copy-paste
 - `styles.css` — minimal custom CSS
-- `progress/example-update.qmd` — example progress entry
-- `presentations/example-talk/index.qmd` — example RevealJS deck
-- `papers/example-paper/index.qmd` — paper overview (current status, embedded version listing)
-- `papers/example-paper/v1-draft.qmd`, `v2-submitted.qmd` — example version files
+- `new` — scaffolds content: `./new paper|presentation|abstract|progress <slug>`. The template ships with no example content; `new` is the single source of starter files.
 
 ### Author metadata
 
