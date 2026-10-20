@@ -25,7 +25,7 @@ The preferred way to create new projects:
 ./create my-project --lang python --no-quarto  # skip Quarto site
 ```
 
-Requires PyYAML (`pip install pyyaml` or available via `uv`).
+Requires PyYAML. If it isn't importable, `create` re-runs itself via `uv run --no-project --with pyyaml` (guarded by the `CREATE_UV_REEXEC` env var); it exits with an error only if `uv` is missing too.
 
 ### `config.yaml` — shared configuration
 

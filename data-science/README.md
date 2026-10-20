@@ -14,7 +14,7 @@ One command creates a fully configured project with the right directory structur
 
 **Prerequisites (system wide):**
 
-- Python 3 + [PyYAML](https://pypi.org/project/PyYAML/) (for the `create` script)
+- Python 3 for the `create` script. It needs [PyYAML](https://pypi.org/project/PyYAML/); if PyYAML isn't installed, `create` runs itself through `uv` to get it
 - [Quarto CLI](https://quarto.org/docs/get-started/)
 - `uv` for Python projects; R + `renv` for R/Python+R projects
 

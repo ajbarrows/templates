@@ -1,4 +1,4 @@
-default_project_dir: ~/Documents/projects
+default_project_dir: /Users/tony/06_projects
 default_remote: git@github.com:ajbarrows
 
 author:
