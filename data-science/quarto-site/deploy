@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# deploy — render the Quarto site and sync it to the Apache server over SSH.
+# Run from the quarto/ directory of your project. Settings live in _deploy.conf.
+#
+# Usage:
+#   ./deploy              # render, check, sync
+#   ./deploy --dry-run    # render, check, show what would change on the server
+#   ./deploy --no-render  # deploy the existing _site/ as-is
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SITE_DIR="$SCRIPT_DIR/_site"
+CONF="$SCRIPT_DIR/_deploy.conf"
+MAX_FILE_MB=50
+
+# Extensions that must never be published (mirrors .claudeignore).
+BLOCKED_EXT="csv|tsv|parquet|feather|arrow|h5|hdf5|nc|nc4|npy|npz|mat|rda|rds|RData|pkl|pickle|xlsx|xls|db|sqlite|sqlite3|zip|gz|tar|ipynb|env|Renviron"
+
+usage() {
+    cat >&2 <<'USAGE'
+Usage: ./deploy [--dry-run] [--no-render]
+
+  --dry-run    show what rsync would change without changing anything
+  --no-render  skip `quarto render` and deploy the existing _site/
+USAGE
+    exit 1
+}
+
+DRY_RUN=false
+RENDER=true
+for arg in "$@"; do
+    case "$arg" in
+        --dry-run)   DRY_RUN=true ;;
+        --no-render) RENDER=false ;;
+        *)           usage ;;
+    esac
+done
+
+# ── Config ────────────────────────────────────────────────────────────
+[[ -f "$CONF" ]] || { echo "Error: $CONF not found." >&2; exit 1; }
+# shellcheck source=/dev/null
+source "$CONF"
+
+for var in PROJECT SSH_HOST REMOTE_DIR; do
+    [[ -n "${!var:-}" ]] || { echo "Error: $var is not set in _deploy.conf." >&2; exit 1; }
+done
+
+# Guard against syncing (with --delete) into the wrong directory.
+if [[ "$REMOTE_DIR" != /* || "${REMOTE_DIR%/}" != */"$PROJECT" ]]; then
+    echo "Error: REMOTE_DIR must be an absolute path ending in /$PROJECT (got: $REMOTE_DIR)." >&2
+    exit 1
+fi
+
+# ── Render ────────────────────────────────────────────────────────────
+if $RENDER; then
+    # Use the project's uv venv for Python chunks when there is one.
+    if [[ -x "$SCRIPT_DIR/../.venv/bin/python" ]]; then
+        export QUARTO_PYTHON="$SCRIPT_DIR/../.venv/bin/python"
+    fi
+    (cd "$SCRIPT_DIR" && quarto render)
+fi
+
+[[ -d "$SITE_DIR" ]] || { echo "Error: $SITE_DIR not found. Render first." >&2; exit 1; }
+
+# ── Safety check ──────────────────────────────────────────────────────
+problems=$(
+    cd "$SITE_DIR"
+    find -L . -type f | grep -E "\.($BLOCKED_EXT)$|/(collab|converted)/" || true
+    find -L . -type f -size +"${MAX_FILE_MB}M" || true
+)
+if [[ -n "$problems" ]]; then
+    echo "Error: _site/ contains files that should not be published:" >&2
+    echo "$problems" | sort -u | sed 's/^/  /' >&2
+    exit 1
+fi
+
+# ── Sync ──────────────────────────────────────────────────────────────
+# Make everything world-readable for Apache. Done locally because macOS's
+# openrsync accepts --chmod but ignores it.
+chmod -R u=rwX,go=rX "$SITE_DIR"
+
+rsync_args=(-avz --delete --copy-links)
+$DRY_RUN && rsync_args+=(--dry-run)
+
+rsync "${rsync_args[@]}" "$SITE_DIR/" "$SSH_HOST:${REMOTE_DIR%/}/"
+
+if $DRY_RUN; then
+    echo "Dry run complete; nothing was changed on $SSH_HOST."
+else
+    echo "Deployed to ${SITE_URL:-$SSH_HOST:$REMOTE_DIR}"
+fi

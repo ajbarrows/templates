@@ -127,6 +127,20 @@ cd quarto
 ./new progress <slug>       # new dated progress update
 ```
 
+#### Deploying
+
+The site deploys as rendered HTML to an Apache server over SSH. Set `deploy:` in
+`config.yaml` (SSH host alias, base path, base URL); each project publishes to
+`<base_path>/<project>/`. Per-project settings live in `quarto/_deploy.conf`.
+
+```bash
+cd quarto
+./deploy --dry-run          # render and preview the changes
+./deploy                    # render, check for data files, rsync
+```
+
+`make deploy` / `make deploy-dry` do the same from the project root in the Python templates.
+
 - **`paper`**
   -
 - **`presentation`**

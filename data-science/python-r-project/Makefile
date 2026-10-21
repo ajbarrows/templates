@@ -25,6 +25,16 @@ clean:
 	find . -type d -name "*.egg-info" -exec rm -rf {} +
 	rm -rf dist build
 
+## deploy      : render the Quarto site and publish it to the server
+.PHONY: deploy
+deploy:
+	cd quarto && ./deploy
+
+## deploy-dry  : render and show what deploy would change on the server
+.PHONY: deploy-dry
+deploy-dry:
+	cd quarto && ./deploy --dry-run
+
 ## help        : show this help message
 help:
 	@sed -n 's/^## //p' $(MAKEFILE_LIST)

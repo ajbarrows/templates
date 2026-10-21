@@ -112,6 +112,8 @@ Workflow: Python processes data → saves to `data/processed/` → R reads for s
 - `_quarto.yml` — site config, navbar, format defaults; holds the project-wide `author:` default (top-level key, applied to all documents) and commented collaborator profile blocks for copy-paste
 - `styles.css` — minimal custom CSS
 - `new` — scaffolds content: `./new paper|presentation|abstract|progress <slug>`. The template ships with no example content; `new` is the single source of starter files.
+- `deploy` — renders the site and rsyncs `_site/` over SSH to the Apache server (see below)
+- `_deploy.conf` — per-project deploy settings (`PROJECT`, `SSH_HOST`, `REMOTE_DIR`, `SITE_URL`), written by `create` from `config.yaml` → `deploy:`
 
 ### Author metadata
 
@@ -163,7 +165,7 @@ papers/convert to-latex my-paper v1-draft
 papers/convert to-latex my-paper v1-draft --raw-bib
 
 # DOCX → QMD (citations become formatted text; manual cleanup needed)
-papers/convert from-docx my-paper collab/baseline.docx
+papers/convert to-qmd my-paper collab/baseline.docx
 ```
 
 Output lands in `papers/<slug>/converted/`.
@@ -176,6 +178,24 @@ Output lands in `papers/<slug>/converted/`.
 Set `ZOTERO_BBT_FILTER=/path/to/zotero.lua` to override the auto-detected location.
 
 The `.qmd` is always the source of truth; `converted/` holds disposable output artifacts.
+
+### Deployment
+
+The site always deploys as pre-rendered HTML to an Apache server. Rendering happens locally because code chunks read `data/`, which never leaves the machine — so no CI.
+
+```bash
+cd quarto && ./deploy            # render, safety check, rsync
+./deploy --dry-run               # show what would change on the server
+./deploy --no-render             # ship the existing _site/
+make deploy / make deploy-dry    # same, from the project root (Python templates)
+```
+
+- Each project deploys to `<base_path>/<project>/`, served at `<base_url>/<project>/` (`config.yaml` → `deploy:`); `create` writes these into `quarto/_deploy.conf` and sets `website.site-url`
+- The safety check aborts if `_site/` contains data-type files (the `.claudeignore` extensions), anything under `collab/` or `converted/`, or a file over 50 MB
+- `rsync --delete` mirrors `_site/` exactly; the script refuses to run unless `REMOTE_DIR` is absolute and ends in `/<PROJECT>`
+- `collab/` and `converted/` are excluded from rendering in `_quarto.yml`
+- Password protection is handled on the server, not in the template
+- Never run `deploy` unless explicitly asked — it publishes
 
 ## Style
 

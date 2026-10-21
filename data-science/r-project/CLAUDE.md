@@ -37,3 +37,7 @@ source("R/load_data.R")
 ## Configuration
 
 All paths are defined in `R/config.R` using `here::here()`. Use these constants — never hardcode paths. Credentials go in `.Renviron` (gitignored).
+
+## Publishing
+
+`quarto/deploy` publishes the site to a web server. Never run it unless explicitly asked.

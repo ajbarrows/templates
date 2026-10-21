@@ -39,3 +39,7 @@ make clean    # remove caches
 ## Configuration
 
 All paths are defined in `project_name/config.py` (`PROJ_ROOT`, `DATA_DIR`, `RAW_DATA_DIR`, etc.). Use these constants — never hardcode paths. Credentials go in `.env` (gitignored; loaded by `config.py`). The logger is re-exported from `config.py` via loguru.
+
+## Publishing
+
+`quarto/deploy` publishes the site to a web server. Never run it (or `make deploy`) unless explicitly asked.
